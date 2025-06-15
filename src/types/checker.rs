@@ -27,12 +27,23 @@ pub fn get_type<T: Any>(_: &T) -> String {
 
 /// Checks if a type string appears to be a generic or collection (like `Vec<T>` or `[T]`).
 pub fn is_list_like(type_str: &str) -> bool {
-    if type_str.contains('<') || type_str.contains('>') {
-        return true;
+    let mut first_non_ws = None;
+    let mut last_non_ws = None;
+
+    for c in type_str.chars() {
+        if c == '<' || c == '>' {
+            return true;
+        }
+
+        if !c.is_whitespace() {
+            if first_non_ws.is_none() {
+                first_non_ws = Some(c);
+            }
+            last_non_ws = Some(c);
+        }
     }
 
-    let trimmed = type_str.trim();
-    trimmed.starts_with('[') && trimmed.ends_with(']')
+    first_non_ws == Some('[') && last_non_ws == Some(']')
 }
 
 /// Removes namespace qualifiers from a type string, preserving generics structure.
