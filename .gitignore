@@ -15,3 +15,6 @@ target/
 
 # Cargo configuration
 .cargo/
+
+# Cargo lock file
+Cargo.lock
