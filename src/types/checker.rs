@@ -1,18 +1,23 @@
 use std::any::Any;
 
-use once_cell::sync::Lazy;
+use std::sync::OnceLock;
 use regex::Regex;
 
-use crate::Result;
-
 /// Regex to remove namespace qualifiers.
-static QUALIFIER_RE: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"([a-zA-Z_][a-zA-Z0-9_]*::)+").expect("Failed to compile qualifier regex")
-});
+static QUALIFIER_RE: OnceLock<Regex> = OnceLock::new();
+
+/// Regex getter
+#[inline(always)]
+fn qualifier_re() -> &'static Regex {
+    QUALIFIER_RE.get_or_init(|| {
+        Regex::new(r"([a-zA-Z_][a-zA-Z0-9_]*::)+")
+            .expect("Failed to compile qualifier regex")
+    })
+}
 
 /// Removes namespace qualifiers from a non-generic type string.
-pub fn simplify_nonlist_type(type_str: &str) -> Result<String> {
-    Ok(type_str.split("::").last().unwrap_or(type_str).to_string())
+pub fn simplify_nonlist_type(type_str: &str) -> String {
+    type_str.split("::").last().unwrap_or(type_str).to_string()
 }
 
 /// Gets the type name of a value using `std::any::type_name`.
@@ -31,7 +36,7 @@ pub fn is_list_like(type_str: &str) -> bool {
 }
 
 /// Removes namespace qualifiers from a type string, preserving generics structure.
-pub fn simplify_type(type_str: &str) -> Result<String> {
+pub fn simplify_type(type_str: &str) -> String {
     if !is_list_like(type_str) {
         return simplify_nonlist_type(type_str);
     }
@@ -54,7 +59,7 @@ pub fn simplify_type(type_str: &str) -> Result<String> {
                 if !result.is_empty() {
                     result.push_str(", ");
                 }
-                result.push_str(&QUALIFIER_RE.replace_all(&token, ""));
+                result.push_str(&qualifier_re().replace_all(&token, ""));
                 token.clear();
             }
             _ => token.push(c),
@@ -64,8 +69,8 @@ pub fn simplify_type(type_str: &str) -> Result<String> {
         if !result.is_empty() {
             result.push_str(", ");
         }
-        result.push_str(&QUALIFIER_RE.replace_all(&token, ""));
+        result.push_str(&qualifier_re().replace_all(&token, ""));
     }
 
-    Ok(result)
+    result
 }
