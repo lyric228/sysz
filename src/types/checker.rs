@@ -1,4 +1,4 @@
-use std::any::Any;
+use std::any::{Any, type_name};
 
 use std::sync::OnceLock;
 use regex::Regex;
@@ -22,7 +22,7 @@ pub fn simplify_nonlist_type(type_str: &str) -> String {
 
 /// Gets the type name of a value using `std::any::type_name`.
 pub fn get_type<T: Any>(_: &T) -> String {
-    std::any::type_name::<T>().to_owned()
+    type_name::<T>().to_owned()
 }
 
 /// Checks if a type string appears to be a generic or collection (like `Vec<T>` or `[T]`).
