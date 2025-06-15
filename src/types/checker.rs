@@ -16,13 +16,13 @@ fn qualifier_re() -> &'static Regex {
 }
 
 /// Removes namespace qualifiers from a non-generic type string.
-pub fn simplify_nonlist_type(type_str: &str) -> String {
-    type_str.split("::").last().unwrap_or(type_str).to_string()
+pub fn simplify_nonlist_type<'a>(type_str: &'a str) -> &'a str {
+    type_str.rsplit("::").next().unwrap_or(type_str)
 }
 
 /// Gets the type name of a value using `std::any::type_name`.
-pub fn get_type<T: Any>(_: &T) -> String {
-    type_name::<T>().to_owned()
+pub fn get_type<T: Any>(_: &T) -> &'static str {
+    type_name::<T>()
 }
 
 /// Checks if a type string appears to be a generic or collection (like `Vec<T>` or `[T]`).
@@ -49,12 +49,14 @@ pub fn is_list_like(type_str: &str) -> bool {
 /// Removes namespace qualifiers from a type string, preserving generics structure.
 pub fn simplify_type(type_str: &str) -> String {
     if !is_list_like(type_str) {
-        return simplify_nonlist_type(type_str);
+        return simplify_nonlist_type(type_str).into();
     }
 
     let mut result = String::with_capacity(type_str.len());
-    let mut token = String::with_capacity(type_str.len() / 2);
+    let mut token = String::new();
     let mut bracket_depth: i32 = 0;
+    let mut requires_processing = false;
+    let mut last_char = ' ';
 
     for c in type_str.chars() {
         match c {
@@ -67,21 +69,34 @@ pub fn simplify_type(type_str: &str) -> String {
                 token.push(c);
             }
             ',' if bracket_depth == 0 => {
-                if !result.is_empty() {
-                    result.push_str(", ");
-                }
-                result.push_str(&qualifier_re().replace_all(&token, ""));
+                process_token(&mut result, &token, requires_processing);
                 token.clear();
+                requires_processing = false;
             }
-            _ => token.push(c),
+            _ => {
+                if last_char == ':' && c == ':' {
+                    requires_processing = true;
+                }
+                token.push(c);
+                last_char = c;
+            }
         }
-    }
-    if !token.is_empty() {
-        if !result.is_empty() {
-            result.push_str(", ");
-        }
-        result.push_str(&qualifier_re().replace_all(&token, ""));
     }
 
+    // Process last token
+    process_token(&mut result, &token, requires_processing);
     result
+}
+
+/// Обрабатывает токен с условиями проверки
+fn process_token(result: &mut String, token: &str, requires_processing: bool) {
+    if !result.is_empty() {
+        result.push_str(", ");
+    }
+
+    if requires_processing {
+        result.push_str(&qualifier_re().replace_all(token, ""));
+    } else {
+        result.push_str(token);
+    }
 }
