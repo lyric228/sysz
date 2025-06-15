@@ -25,7 +25,7 @@ pub fn get_type<T: Any>(_: &T) -> &'static str {
     type_name::<T>()
 }
 
-/// Checks if a type string appears to be a generic or collection (like `Vec<T>` or `[T]`).
+/// Checks if a type string appears to be a generic (like `Vec<T>`, `Mutex<T>` or `[T]`).
 pub fn is_list_like(type_str: &str) -> bool {
     let mut first_non_ws = None;
     let mut last_non_ws = None;
