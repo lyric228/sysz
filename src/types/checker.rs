@@ -41,8 +41,8 @@ pub fn simplify_type(type_str: &str) -> String {
         return simplify_nonlist_type(type_str);
     }
 
-    let mut result: String = String::with_capacity(type_str.len());
-    let mut token: String = String::with_capacity(type_str.len() / 2);
+    let mut result = String::with_capacity(type_str.len());
+    let mut token = String::with_capacity(type_str.len() / 2);
     let mut bracket_depth: i32 = 0;
 
     for c in type_str.chars() {
