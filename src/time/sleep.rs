@@ -118,7 +118,7 @@ impl FromStr for SleepTime {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let s = s.trim();
         if s.is_empty() {
-            return Err(SleepError::InvalidFormat("empty string".into()));
+            return Err(SleepError::InvalidFormat("empty string".to_owned()));
         }
 
         // Split into numeric and alphabetic parts

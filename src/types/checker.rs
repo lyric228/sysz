@@ -16,8 +16,8 @@ fn qualifier_re() -> &'static Regex {
 }
 
 /// Removes namespace qualifiers from a non-generic type string.
-pub fn simplify_nonlist_type<'a>(type_str: &'a str) -> &'a str {
-    type_str.rsplit("::").next().unwrap_or(type_str)
+pub fn simplify_nonlist_type<'a>(type_str: &'a str) -> String {
+    type_str.rsplit("::").next().unwrap_or(type_str).to_owned()
 }
 
 /// Gets the type name of a value using `std::any::type_name`.
@@ -49,7 +49,7 @@ pub fn is_list_like(type_str: &str) -> bool {
 /// Removes namespace qualifiers from a type string, preserving generics structure.
 pub fn simplify_type(type_str: &str) -> String {
     if !is_list_like(type_str) {
-        return simplify_nonlist_type(type_str).into();
+        return simplify_nonlist_type(type_str);
     }
 
     let mut result = String::with_capacity(type_str.len());

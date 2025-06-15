@@ -26,11 +26,11 @@ pub fn decode(bin: &str) -> Result<String> {
 
     let len = cleaned.len();
     if !is_valid {
-        return Err(SyszError::InvalidSyntax("Non-binary character detected".into()));
+        return Err(SyszError::InvalidSyntax("Non-binary character detected".to_owned()));
     }
     if len % 8 != 0 {
         return Err(SyszError::InvalidSyntax(
-            "Binary string must have length multiple of 8".into(),
+            "Binary string must have length multiple of 8".to_owned(),
         ));
     }
 
@@ -101,11 +101,11 @@ pub fn format(bin: &str) -> Result<String> {
     let len = cleaned.len();
     
     if len == 0 {
-        return Err(SyszError::InvalidSyntax("Empty binary string".into()));
+        return Err(SyszError::InvalidSyntax("Empty binary string".to_owned()));
     }
     if len % 8 != 0 {
         return Err(SyszError::InvalidSyntax(
-            "Binary string length must be multiple of 8".into(),
+            "Binary string length must be multiple of 8".to_owned(),
         ));
     }
     

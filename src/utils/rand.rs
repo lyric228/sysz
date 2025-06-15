@@ -19,7 +19,7 @@ where
         Some(_) => (min, max),
         None => {
             return Err(Error::InvalidSyntax(
-                "Invalid range comparison: cannot compare given values".into(),
+                "Invalid range comparison: cannot compare given values".to_owned(),
             ));
         }
     };
@@ -42,7 +42,7 @@ pub fn random_string(length: usize, charset: Option<&str>) -> Result<String> {
 
     if let Some(chars) = charset {
         if chars.is_empty() {
-            return Err(Error::InvalidSyntax("Provided charset is empty".into()));
+            return Err(Error::InvalidSyntax("Provided charset is empty".to_owned()));
         }
         let char_vec: Vec<char> = chars.chars().collect();
         let distr = Uniform::new(0, char_vec.len());
@@ -80,7 +80,7 @@ where
         Some(_) => (min, max),
         None => {
             return Err(Error::InvalidSyntax(
-                "Invalid range comparison: cannot compare given values".into(),
+                "Invalid range comparison: cannot compare given values".to_owned(),
             ));
         }
     };
@@ -106,7 +106,7 @@ where
 /// Returns Error if denominator is zero.
 pub fn random_ratio(numerator: u32, denominator: u32) -> Result<bool> {
     if denominator == 0 {
-        return Err(Error::InvalidSyntax("Denominator cannot be zero".into()));
+        return Err(Error::InvalidSyntax("Denominator cannot be zero".to_owned()));
     }
     let mut rng = rng();
     Ok(rng.random_ratio(numerator, denominator))

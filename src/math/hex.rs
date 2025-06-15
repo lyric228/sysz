@@ -70,10 +70,10 @@ pub fn decode(hex: &str) -> Result<String> {
 
     let len = cleaned.len();
     if !is_valid {
-        return Err(SyszError::InvalidSyntax("Non-hex character detected".into()));
+        return Err(SyszError::InvalidSyntax("Non-hex character detected".to_owned()));
     }
     if len % 2 != 0 {
-        return Err(SyszError::InvalidSyntax("Hex string must have even length".into()));
+        return Err(SyszError::InvalidSyntax("Hex string must have even length".to_owned()));
     }
 
     let mut bytes = Vec::with_capacity(len / 2);
@@ -135,11 +135,11 @@ pub fn format(hex: &str) -> Result<String> {
     let len = cleaned.len();
     
     if len == 0 {
-        return Err(SyszError::InvalidSyntax("Empty hex string".into()));
+        return Err(SyszError::InvalidSyntax("Empty hex string".to_owned()));
     }
     if len % 2 != 0 {
         return Err(SyszError::InvalidSyntax(
-            "Hexadecimal string length must be a multiple of 2".into(),
+            "Hexadecimal string length must be a multiple of 2".to_owned(),
         ));
     }
     
