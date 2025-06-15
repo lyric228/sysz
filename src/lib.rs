@@ -25,4 +25,5 @@ pub mod time {
     pub use sleep::*;
 }
 
+pub use io::*;
 pub use types::error::*;
