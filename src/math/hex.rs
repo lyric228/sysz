@@ -1,4 +1,4 @@
-use crate::{Result, SysxError};
+use crate::{Result, SyszError};
 
 const HEX_CHARS_UPPER: [u8; 16] = *b"0123456789ABCDEF";
 const TO_UPPER_MASK: u8 = 0b11011111;
@@ -70,10 +70,10 @@ pub fn decode(hex: &str) -> Result<String> {
 
     let len = cleaned.len();
     if !is_valid {
-        return Err(SysxError::InvalidSyntax("Non-hex character detected".into()));
+        return Err(SyszError::InvalidSyntax("Non-hex character detected".into()));
     }
     if len % 2 != 0 {
-        return Err(SysxError::InvalidSyntax("Hex string must have even length".into()));
+        return Err(SyszError::InvalidSyntax("Hex string must have even length".into()));
     }
 
     let mut bytes = Vec::with_capacity(len / 2);
@@ -81,15 +81,15 @@ pub fn decode(hex: &str) -> Result<String> {
     
     while let (Some(c1), Some(c2)) = (chars.next(), chars.next()) {
         let hi = c1.to_digit(16).ok_or_else(|| {
-            SysxError::InvalidSyntax(format!("Invalid hex character: {}", c1))
+            SyszError::InvalidSyntax(format!("Invalid hex character: {}", c1))
         })? as u8;
         let lo = c2.to_digit(16).ok_or_else(|| {
-            SysxError::InvalidSyntax(format!("Invalid hex character: {}", c2))
+            SyszError::InvalidSyntax(format!("Invalid hex character: {}", c2))
         })? as u8;
         bytes.push((hi << 4) | lo);
     }
 
-    String::from_utf8(bytes).map_err(|e| SysxError::InvalidSyntax(format!("Invalid UTF-8: {e}")))
+    String::from_utf8(bytes).map_err(|e| SyszError::InvalidSyntax(format!("Invalid UTF-8: {e}")))
 }
 
 /// Converts string to space-separated hexadecimal string
@@ -135,10 +135,10 @@ pub fn format(hex: &str) -> Result<String> {
     let len = cleaned.len();
     
     if len == 0 {
-        return Err(SysxError::InvalidSyntax("Empty hex string".into()));
+        return Err(SyszError::InvalidSyntax("Empty hex string".into()));
     }
     if len % 2 != 0 {
-        return Err(SysxError::InvalidSyntax(
+        return Err(SyszError::InvalidSyntax(
             "Hexadecimal string length must be a multiple of 2".into(),
         ));
     }

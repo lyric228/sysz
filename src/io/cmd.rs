@@ -5,21 +5,21 @@ use std::{
 
 use anyhow::Context;
 
-use crate::{Result, SysxError};
+use crate::{Result, SyszError};
 
 /// Executes a command silently and returns its Output.
 pub fn slrun(command_line: &str) -> Result<Output> {
     let trimmed = command_line.trim();
 
     if trimmed.is_empty() {
-        return Err(SysxError::AnyhowError(anyhow::anyhow!(
+        return Err(SyszError::AnyhowError(anyhow::anyhow!(
             "Empty command line"
         )));
     }
 
     let mut parts = shell_words::split(trimmed)
         .context("Failed to parse command line")
-        .map_err(SysxError::AnyhowError)?;
+        .map_err(SyszError::AnyhowError)?;
 
     let program = parts.remove(0);
     let args = parts;
@@ -31,7 +31,7 @@ pub fn slrun(command_line: &str) -> Result<Output> {
         .stdin(Stdio::piped())
         .output()
         .with_context(|| format!("Failed to execute command '{command_line}'"))
-        .map_err(SysxError::AnyhowError)?;
+        .map_err(SyszError::AnyhowError)?;
 
     Ok(output)
 }
@@ -51,7 +51,7 @@ pub fn run(command: &str) -> Result<Output> {
 macro_rules! slrunf {
     ($($arg:tt)*) => {
         slrun(&format!($($arg)*))
-            .map_err(SysxError::from)
+            .map_err(SyszError::from)
     }
 }
 pub use slrunf;
@@ -61,7 +61,7 @@ pub use slrunf;
 macro_rules! runf {
     ($($arg:tt)*) => {
         run(&format!($($arg)*))
-            .map_err(SysxError::from)
+            .map_err(SyszError::from)
     }
 }
 pub use runf;
@@ -70,7 +70,7 @@ pub use runf;
 pub fn input_buf(buffer: &mut String) -> Result<()> {
     io::stdin()
         .read_line(buffer)
-        .map_err(|e| SysxError::AnyhowError(anyhow::anyhow!("Failed to read line: {}", e)))
+        .map_err(|e| SyszError::AnyhowError(anyhow::anyhow!("Failed to read line: {}", e)))
         .map(|_| {
             if buffer.ends_with('\n') {
                 buffer.pop();

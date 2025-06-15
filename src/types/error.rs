@@ -3,9 +3,9 @@ use rand::distr::uniform::Error as RandUniformError;
 use regex::Error as RegexError;
 use thiserror::Error;
 
-/// Main error type for the sysx library.
+/// Main error type for the sysz library.
 #[derive(Debug, Error)]
-pub enum SysxError {
+pub enum SyszError {
     /// Invalid type syntax during parsing.
     #[error("Invalid type syntax: {0}")]
     InvalidSyntax(String),
@@ -99,8 +99,8 @@ pub enum TimeError {
     NegativeDuration,
 }
 
-/// Result type for sysx library functions.
-pub type Result<T> = std::result::Result<T, SysxError>;
+/// Result type for sysz library functions.
+pub type Result<T> = std::result::Result<T, SyszError>;
 
 /// Main error type alias.
-pub type Error = SysxError;
+pub type Error = SyszError;
