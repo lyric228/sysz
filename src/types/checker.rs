@@ -8,7 +8,7 @@ use regex::Regex;
 /// Regex to remove namespace qualifiers.
 static QUALIFIER_RE: OnceLock<Regex> = OnceLock::new();
 
-/// Regex getter
+/// Regex getter.
 #[inline(always)]
 fn qualifier_re() -> &'static Regex {
     QUALIFIER_RE.get_or_init(|| {

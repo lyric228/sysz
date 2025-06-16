@@ -33,7 +33,7 @@ pub enum SleepError {
     IntConversion(#[from] TryFromIntError),
 }
 
-/// Represents sleep time internally with nanosecond precision
+/// Represents sleep time internally with nanosecond precision.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct SleepTime {
     nanoseconds: u128,
