@@ -83,12 +83,11 @@ pub fn simplify_type(type_str: &str) -> String {
         }
     }
 
-    // Process last token
     process_token(&mut result, &token, requires_processing);
     result
 }
 
-/// Обрабатывает токен с условиями проверки
+/// Processes a single type token, removing namespace qualifiers if needed and appending to result.
 fn process_token(result: &mut String, token: &str, requires_processing: bool) {
     if !result.is_empty() {
         result.push_str(", ");
