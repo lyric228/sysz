@@ -1,9 +1,9 @@
 pub mod io;
-pub mod net;
 pub mod math;
-pub mod utils;
-pub mod types;
+pub mod net;
 pub mod time;
+pub mod types;
+pub mod utils;
 
 pub use io::*;
 pub use types::error::*;

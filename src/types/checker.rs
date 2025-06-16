@@ -1,6 +1,8 @@
-use std::any::{Any, type_name};
+use std::{
+    any::{Any, type_name},
+    sync::OnceLock,
+};
 
-use std::sync::OnceLock;
 use regex::Regex;
 
 /// Regex to remove namespace qualifiers.
@@ -10,13 +12,12 @@ static QUALIFIER_RE: OnceLock<Regex> = OnceLock::new();
 #[inline(always)]
 fn qualifier_re() -> &'static Regex {
     QUALIFIER_RE.get_or_init(|| {
-        Regex::new(r"([a-zA-Z_][a-zA-Z0-9_]*::)+")
-            .expect("Failed to compile qualifier regex")
+        Regex::new(r"([a-zA-Z_][a-zA-Z0-9_]*::)+").expect("Failed to compile qualifier regex")
     })
 }
 
 /// Removes namespace qualifiers from a non-generic type string.
-pub fn simplify_nonlist_type<'a>(type_str: &'a str) -> String {
+pub fn simplify_nonlist_type(type_str: &str) -> String {
     type_str.rsplit("::").next().unwrap_or(type_str).to_owned()
 }
 

@@ -8,14 +8,14 @@ const TO_LOWER_MASK: u8 = 0b00100000;
 pub fn to_uppercase(hex: &str) -> String {
     let bytes = hex.as_bytes();
     let mut result = String::with_capacity(bytes.len());
-    
+
     unsafe {
         let out = result.as_mut_vec();
         out.set_len(bytes.len());
-        
+
         for i in 0..bytes.len() {
             let mut b = bytes[i];
-            if (b >= b'a') && (b <= b'f') {
+            if (b'a'..=b'f').contains(&b) {
                 b &= TO_UPPER_MASK;
             }
             out[i] = b;
@@ -28,14 +28,14 @@ pub fn to_uppercase(hex: &str) -> String {
 pub fn to_lowercase(hex: &str) -> String {
     let bytes = hex.as_bytes();
     let mut result = String::with_capacity(bytes.len());
-    
+
     unsafe {
         let out = result.as_mut_vec();
         out.set_len(bytes.len());
-        
+
         for i in 0..bytes.len() {
             let mut b = bytes[i];
-            if (b >= b'A') && (b <= b'F') {
+            if (b'A'..=b'F').contains(&b) {
                 b |= TO_LOWER_MASK;
             }
             out[i] = b;
@@ -59,7 +59,7 @@ pub fn clean(input: &str) -> String {
 pub fn decode(hex: &str) -> Result<String> {
     let mut cleaned = String::with_capacity(hex.len());
     let mut is_valid = true;
-    
+
     for c in hex.chars() {
         if c.is_ascii_hexdigit() {
             cleaned.push(c);
@@ -70,22 +70,28 @@ pub fn decode(hex: &str) -> Result<String> {
 
     let len = cleaned.len();
     if !is_valid {
-        return Err(SyszError::InvalidSyntax("Non-hex character detected".to_owned()));
+        return Err(SyszError::InvalidSyntax(
+            "Non-hex character detected".to_owned(),
+        ));
     }
     if len % 2 != 0 {
-        return Err(SyszError::InvalidSyntax("Hex string must have even length".to_owned()));
+        return Err(SyszError::InvalidSyntax(
+            "Hex string must have even length".to_owned(),
+        ));
     }
 
     let mut bytes = Vec::with_capacity(len / 2);
     let mut chars = cleaned.chars();
-    
+
     while let (Some(c1), Some(c2)) = (chars.next(), chars.next()) {
-        let hi = c1.to_digit(16).ok_or_else(|| {
-            SyszError::InvalidSyntax(format!("Invalid hex character: {}", c1))
-        })? as u8;
-        let lo = c2.to_digit(16).ok_or_else(|| {
-            SyszError::InvalidSyntax(format!("Invalid hex character: {}", c2))
-        })? as u8;
+        let hi = c1
+            .to_digit(16)
+            .ok_or_else(|| SyszError::InvalidSyntax(format!("Invalid hex character: {c1}")))?
+            as u8;
+        let lo = c2
+            .to_digit(16)
+            .ok_or_else(|| SyszError::InvalidSyntax(format!("Invalid hex character: {c2}")))?
+            as u8;
         bytes.push((hi << 4) | lo);
     }
 
@@ -96,7 +102,7 @@ pub fn decode(hex: &str) -> Result<String> {
 pub fn encode(text: &str) -> String {
     let bytes = text.as_bytes();
     let mut result = String::with_capacity(bytes.len() * 3);
-    
+
     for (i, &byte) in bytes.iter().enumerate() {
         if i > 0 {
             result.push(' ');
@@ -109,14 +115,17 @@ pub fn encode(text: &str) -> String {
 
 /// Checks if a string contains only hex characters and whitespace
 pub fn is_valid(hex: &str) -> bool {
-    !hex.is_empty() && hex.chars().all(|c| c.is_whitespace() || c.is_ascii_hexdigit())
+    !hex.is_empty()
+        && hex
+            .chars()
+            .all(|c| c.is_whitespace() || c.is_ascii_hexdigit())
 }
 
 /// Checks if a whitespace-cleaned hex string has even length and valid hex digits
 pub fn is_valid_strict(hex: &str) -> bool {
     let mut length = 0;
     let mut is_valid = true;
-    
+
     for c in hex.chars() {
         if c.is_ascii_hexdigit() {
             length += 1;
@@ -125,7 +134,7 @@ pub fn is_valid_strict(hex: &str) -> bool {
             break;
         }
     }
-    
+
     is_valid && length > 0 && length % 2 == 0
 }
 
@@ -133,7 +142,7 @@ pub fn is_valid_strict(hex: &str) -> bool {
 pub fn format(hex: &str) -> Result<String> {
     let cleaned = clean(hex);
     let len = cleaned.len();
-    
+
     if len == 0 {
         return Err(SyszError::InvalidSyntax("Empty hex string".to_owned()));
     }
@@ -142,10 +151,10 @@ pub fn format(hex: &str) -> Result<String> {
             "Hexadecimal string length must be a multiple of 2".to_owned(),
         ));
     }
-    
+
     let mut result = String::with_capacity(len + len / 2);
     let mut chars = cleaned.chars();
-    
+
     for i in 0..(len / 2) {
         if i > 0 {
             result.push(' ');
@@ -153,6 +162,6 @@ pub fn format(hex: &str) -> Result<String> {
         result.push(chars.next().unwrap());
         result.push(chars.next().unwrap());
     }
-    
+
     Ok(result)
 }

@@ -106,7 +106,9 @@ where
 /// Returns Error if denominator is zero.
 pub fn random_ratio(numerator: u32, denominator: u32) -> Result<bool> {
     if denominator == 0 {
-        return Err(Error::InvalidSyntax("Denominator cannot be zero".to_owned()));
+        return Err(Error::InvalidSyntax(
+            "Denominator cannot be zero".to_owned(),
+        ));
     }
     let mut rng = rng();
     Ok(rng.random_ratio(numerator, denominator))
