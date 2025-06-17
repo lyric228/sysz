@@ -11,12 +11,7 @@ pub fn convert(s: &str) -> Option<SocketAddrV6> {
 }
 
 /// Creates a SocketAddrV6 from an IP address string, port, flow info, and scope ID.
-pub fn create_socket(
-    ip: &str,
-    port: u16,
-    flowinfo: u32,
-    scope_id: u32,
-) -> Option<SocketAddrV6> {
+pub fn create_socket(ip: &str, port: u16, flowinfo: u32, scope_id: u32) -> Option<SocketAddrV6> {
     let ip_addr = ip.parse::<Ipv6Addr>().ok()?;
     Some(SocketAddrV6::new(ip_addr, port, flowinfo, scope_id))
 }
