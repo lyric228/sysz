@@ -1,47 +1,50 @@
 use std::{
-    io,
+    io::{self, Write},
     process::{Command, Output, Stdio},
 };
 
-use anyhow::Context;
-
-use crate::{Result, SyszError};
+use crate::{Result, Error};
 
 /// Executes a command silently and returns its Output.
 pub fn slrun(command_line: &str) -> Result<Output> {
     let trimmed = command_line.trim();
-
     if trimmed.is_empty() {
-        return Err(SyszError::AnyhowError(anyhow::anyhow!(
-            "Empty command line"
-        )));
+        return Err(Error::IoError("Empty command line".into()));
     }
 
-    let mut parts = shell_words::split(trimmed)
-        .context("Failed to parse command line")
-        .map_err(SyszError::AnyhowError)?;
+    let mut args = shell_words::split(trimmed)
+        .map_err(|e| Error::IoError(format!("Parse error: {e}")))?;
 
-    let program = parts.remove(0);
-    let args = parts;
+    if args.is_empty() {
+        return Err(Error::IoError("No command specified".into()));
+    }
 
-    let output: Output = Command::new(&program)
-        .args(&args)
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
+    let program = args.remove(0);
+
+    Command::new(&program)
+        .args(args)
         .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
         .output()
-        .with_context(|| format!("Failed to execute command '{command_line}'"))
-        .map_err(SyszError::AnyhowError)?;
-
-    Ok(output)
+        .map_err(|e| Error::IoError(format!("Execution error: {e}")))
 }
 
 /// Executes a command, prints stdout, and returns its Output.
 pub fn run(command: &str) -> Result<Output> {
     let output = slrun(command)?;
+    
+    if !output.stdout.is_empty() {
+        io::stdout()
+            .write_all(&output.stdout)
+            .map_err(|e| Error::IoError(format!("Failed to write stdout: {}", e)))?;
+    }
 
-    let output_str = String::from_utf8_lossy(&output.stdout);
-    println!("{output_str}");
+    if !output.stderr.is_empty() {
+        io::stderr()
+            .write_all(&output.stderr)
+            .map_err(|e| Error::IoError(format!("Failed to write stderr: {}", e)))?;
+    }
 
     Ok(output)
 }
@@ -61,26 +64,37 @@ pub use slrunf;
 macro_rules! runf {
     ($($arg:tt)*) => {
         run(&format!($($arg)*))
-            .map_err(SyszError::from)
+            .map_err(|e| Error::IoError(format!("Execution error: {e}")))
     }
 }
 pub use runf;
 
-/// Reads a line from stdin into the provided buffer, removing the newline.
+/// Reads a line from stdin into the provided buffer.
 pub fn input_buf(buffer: &mut String) -> Result<()> {
+    buffer.clear();
     io::stdin()
         .read_line(buffer)
-        .map_err(|e| SyszError::AnyhowError(anyhow::anyhow!("Failed to read line: {}", e)))
-        .map(|_| {
-            if buffer.ends_with('\n') {
-                buffer.pop();
-            }
-        })
+        .map_err(|e| Error::IoError(format!("Failed to read line: {}", e)))?;
+
+    let len = buffer.trim_end_matches(&['\r', '\n']).len();
+    buffer.truncate(len);
+    
+    Ok(())
 }
 
 /// Reads a line from stdin and returns a new String.
 pub fn input() -> Result<String> {
-    let mut input_text = String::new();
-    input_buf(&mut input_text)?;
-    Ok(input_text)
+    let mut s = String::new();
+    io::stdin()
+        .read_line(&mut s)
+        .map_err(|e| Error::IoError(format!("Failed to read line: {}", e)))?;
+
+    if s.ends_with('\n') {
+        s.pop();
+        if s.ends_with('\r') {
+            s.pop();
+        }
+    }
+
+    Ok(s)
 }
