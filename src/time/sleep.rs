@@ -79,25 +79,24 @@ impl From<Duration> for SleepTime {
 impl TryFrom<f64> for SleepTime {
     type Error = SleepError;
 
-    /// Converts seconds (f64) to SleepTime with error handling
     fn try_from(secs: f64) -> Result<Self, Self::Error> {
         if secs < 0.0 {
             return Err(SleepError::NegativeTime(secs.to_string()));
         }
 
-        let nanoseconds = secs * 1_000_000_000.0;
-
-        // Handle overflow and NaN
-        if nanoseconds.is_nan() || nanoseconds.is_infinite() {
+        const NANOS_PER_SEC: f64 = 1_000_000_000.0;
+        if secs > (u128::MAX as f64) / NANOS_PER_SEC {
             return Err(SleepError::OutOfRange(secs.to_string()));
         }
 
-        if nanoseconds > u128::MAX as f64 {
+        let nanoseconds = secs * NANOS_PER_SEC;
+
+        if !nanoseconds.is_finite() {
             return Err(SleepError::OutOfRange(secs.to_string()));
         }
 
         Ok(Self {
-            nanoseconds: nanoseconds as u128,
+            nanoseconds: nanoseconds.round() as u128,
         })
     }
 }
