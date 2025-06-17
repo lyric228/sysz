@@ -1,4 +1,4 @@
-use crate::{Result, SyszError};
+use crate::{Result, Error};
 
 /// Returns a string containing only binary characters ('0' and '1')
 pub fn clean(input: &str) -> String {
@@ -26,12 +26,12 @@ pub fn decode(bin: &str) -> Result<String> {
 
     let len = cleaned.len();
     if !is_valid {
-        return Err(SyszError::InvalidSyntax(
+        return Err(Error::InvalidSyntax(
             "Non-binary character detected".to_owned(),
         ));
     }
     if len % 8 != 0 {
-        return Err(SyszError::InvalidSyntax(
+        return Err(Error::InvalidSyntax(
             "Binary string must have length multiple of 8".to_owned(),
         ));
     }
@@ -56,7 +56,7 @@ pub fn decode(bin: &str) -> Result<String> {
         bytes.push(byte);
     }
 
-    String::from_utf8(bytes).map_err(|e| SyszError::InvalidSyntax(format!("Invalid UTF-8: {e}")))
+    String::from_utf8(bytes).map_err(|e| Error::InvalidSyntax(format!("Invalid UTF-8: {e}")))
 }
 
 /// Converts a string to a space-separated binary string
@@ -106,10 +106,10 @@ pub fn format(bin: &str) -> Result<String> {
     let len = cleaned.len();
 
     if len == 0 {
-        return Err(SyszError::InvalidSyntax("Empty binary string".to_owned()));
+        return Err(Error::InvalidSyntax("Empty binary string".to_owned()));
     }
     if len % 8 != 0 {
-        return Err(SyszError::InvalidSyntax(
+        return Err(Error::InvalidSyntax(
             "Binary string length must be multiple of 8".to_owned(),
         ));
     }

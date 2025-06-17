@@ -54,7 +54,7 @@ pub fn run(command: &str) -> Result<Output> {
 macro_rules! slrunf {
     ($($arg:tt)*) => {
         slrun(&format!($($arg)*))
-            .map_err(SyszError::from)
+            .map_err(Error::from)
     }
 }
 pub use slrunf;

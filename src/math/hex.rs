@@ -1,4 +1,4 @@
-use crate::{Result, SyszError};
+use crate::{Result, Error};
 
 const HEX_CHARS_UPPER: [u8; 16] = *b"0123456789ABCDEF";
 const TO_UPPER_MASK: u8 = 0b11011111;
@@ -70,12 +70,12 @@ pub fn decode(hex: &str) -> Result<String> {
 
     let len = cleaned.len();
     if !is_valid {
-        return Err(SyszError::InvalidSyntax(
+        return Err(Error::InvalidSyntax(
             "Non-hex character detected".to_owned(),
         ));
     }
     if len % 2 != 0 {
-        return Err(SyszError::InvalidSyntax(
+        return Err(Error::InvalidSyntax(
             "Hex string must have even length".to_owned(),
         ));
     }
@@ -86,16 +86,16 @@ pub fn decode(hex: &str) -> Result<String> {
     while let (Some(c1), Some(c2)) = (chars.next(), chars.next()) {
         let hi = c1
             .to_digit(16)
-            .ok_or_else(|| SyszError::InvalidSyntax(format!("Invalid hex character: {c1}")))?
+            .ok_or_else(|| Error::InvalidSyntax(format!("Invalid hex character: {c1}")))?
             as u8;
         let lo = c2
             .to_digit(16)
-            .ok_or_else(|| SyszError::InvalidSyntax(format!("Invalid hex character: {c2}")))?
+            .ok_or_else(|| Error::InvalidSyntax(format!("Invalid hex character: {c2}")))?
             as u8;
         bytes.push((hi << 4) | lo);
     }
 
-    String::from_utf8(bytes).map_err(|e| SyszError::InvalidSyntax(format!("Invalid UTF-8: {e}")))
+    String::from_utf8(bytes).map_err(|e| Error::InvalidSyntax(format!("Invalid UTF-8: {e}")))
 }
 
 /// Converts string to space-separated hexadecimal string
@@ -144,10 +144,10 @@ pub fn format(hex: &str) -> Result<String> {
     let len = cleaned.len();
 
     if len == 0 {
-        return Err(SyszError::InvalidSyntax("Empty hex string".to_owned()));
+        return Err(Error::InvalidSyntax("Empty hex string".to_owned()));
     }
     if len % 2 != 0 {
-        return Err(SyszError::InvalidSyntax(
+        return Err(Error::InvalidSyntax(
             "Hexadecimal string length must be a multiple of 2".to_owned(),
         ));
     }

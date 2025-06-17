@@ -2,7 +2,7 @@ use std::{io, path::Path};
 
 use image::{DynamicImage, GenericImageView, Pixel, imageops::FilterType};
 
-use crate::types::error::SyszError;
+use crate::types::error::Error;
 
 /// Simple character set (~10 characters).
 pub const CHAR_SET_SIMPLE: &str = " .'`-_:;+=*%#@";
@@ -45,30 +45,30 @@ impl Default for AsciiArtConfig {
     }
 }
 
-fn _image_to_ascii_core(img: DynamicImage, config: &AsciiArtConfig) -> Result<String, SyszError> {
+fn _image_to_ascii_core(img: DynamicImage, config: &AsciiArtConfig) -> Result<String, Error> {
     if config.char_set.is_empty() {
-        return Err(SyszError::ValidationError {
+        return Err(Error::ValidationError {
             expected: "Non-empty character set".to_string(),
             actual:   "Empty character set".to_string(),
             context:  Some("ASCII conversion requires at least one character".to_string()),
         });
     }
     if config.aspect_ratio_compensation <= 0.0 {
-        return Err(SyszError::ValidationError {
+        return Err(Error::ValidationError {
             expected: "Positive aspect ratio compensation".to_string(),
             actual:   format!("Compensation factor: {}", config.aspect_ratio_compensation),
             context:  Some("Aspect ratio compensation must be greater than 0".to_string()),
         });
     }
     if config.width == 0 {
-        return Err(SyszError::ValidationError {
+        return Err(Error::ValidationError {
             expected: "Positive width".to_string(),
             actual:   "Width: 0".to_string(),
             context:  Some("Target width must be greater than 0".to_string()),
         });
     }
     if img.height() == 0 {
-        return Err(SyszError::ValidationError {
+        return Err(Error::ValidationError {
             expected: "Non-zero image height".to_string(),
             actual:   "Image height: 0".to_string(),
             context:  Some("Input image height cannot be zero".to_string()),
@@ -107,17 +107,17 @@ fn _image_to_ascii_core(img: DynamicImage, config: &AsciiArtConfig) -> Result<St
 }
 
 /// Converts an image to ASCII art using a given configuration.
-pub fn image_to_ascii_configurable<P>(path: P, config: &AsciiArtConfig) -> Result<String, SyszError>
+pub fn image_to_ascii_configurable<P>(path: P, config: &AsciiArtConfig) -> Result<String, Error>
 where
     P: AsRef<Path>,
 {
     let img_path = path.as_ref();
     let img = image::open(img_path).map_err(|e| {
-        SyszError::IoError(io::Error::other(format!(
+        Error::IoError(format!(
             "Could not open or decode image file at path '{}': {}",
             img_path.display(),
-            e
-        )))
+            e,
+        ))
     })?;
     _image_to_ascii_core(img, config)
 }
@@ -129,7 +129,7 @@ pub fn image_to_ascii<P, C>(
     width: u32,
     height: u32,
     char_set: C,
-) -> Result<String, SyszError>
+) -> Result<String, Error>
 where
     P: AsRef<Path>,
     C: AsRef<str>,
