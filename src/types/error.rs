@@ -1,5 +1,6 @@
+use std::result::Result as StdResult;
+
 use rand::distr::uniform::Error as RandUniformError;
-use std::{io, result::Result as StdResult};
 
 /// Main error type for the sysz library.
 #[derive(Debug, thiserror::Error)]
@@ -13,7 +14,7 @@ pub enum Error {
         "Type validation error: expected {:?}, found {:?}{:?}",
         expected,
         actual,
-        context,
+        context
     )]
     ValidationError {
         /// Expected type.

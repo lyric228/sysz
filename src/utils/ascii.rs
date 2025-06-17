@@ -1,4 +1,4 @@
-use std::{io, path::Path};
+use std::path::Path;
 
 use image::{DynamicImage, GenericImageView, Pixel, imageops::FilterType};
 
@@ -124,12 +124,7 @@ where
 
 /// Converts an image to ASCII art with specified width, height, and character set string.
 /// Uses default values for other configuration options.
-pub fn image_to_ascii<P, C>(
-    path: P,
-    width: u32,
-    height: u32,
-    char_set: C,
-) -> Result<String, Error>
+pub fn image_to_ascii<P, C>(path: P, width: u32, height: u32, char_set: C) -> Result<String, Error>
 where
     P: AsRef<Path>,
     C: AsRef<str>,

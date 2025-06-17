@@ -3,7 +3,7 @@ use std::{
     process::{Command, Output, Stdio},
 };
 
-use crate::{Result, Error};
+use crate::{Error, Result};
 
 /// Executes a command silently and returns its Output.
 pub fn slrun(command_line: &str) -> Result<Output> {
@@ -12,8 +12,8 @@ pub fn slrun(command_line: &str) -> Result<Output> {
         return Err(Error::IoError("Empty command line".into()));
     }
 
-    let mut args = shell_words::split(trimmed)
-        .map_err(|e| Error::IoError(format!("Parse error: {e}")))?;
+    let mut args =
+        shell_words::split(trimmed).map_err(|e| Error::IoError(format!("Parse error: {e}")))?;
 
     if args.is_empty() {
         return Err(Error::IoError("No command specified".into()));
@@ -33,17 +33,17 @@ pub fn slrun(command_line: &str) -> Result<Output> {
 /// Executes a command, prints stdout, and returns its Output.
 pub fn run(command: &str) -> Result<Output> {
     let output = slrun(command)?;
-    
+
     if !output.stdout.is_empty() {
         io::stdout()
             .write_all(&output.stdout)
-            .map_err(|e| Error::IoError(format!("Failed to write stdout: {}", e)))?;
+            .map_err(|e| Error::IoError(format!("Failed to write stdout: {e}")))?;
     }
 
     if !output.stderr.is_empty() {
         io::stderr()
             .write_all(&output.stderr)
-            .map_err(|e| Error::IoError(format!("Failed to write stderr: {}", e)))?;
+            .map_err(|e| Error::IoError(format!("Failed to write stderr: {e}")))?;
     }
 
     Ok(output)
@@ -74,11 +74,11 @@ pub fn input_buf(buffer: &mut String) -> Result<()> {
     buffer.clear();
     io::stdin()
         .read_line(buffer)
-        .map_err(|e| Error::IoError(format!("Failed to read line: {}", e)))?;
+        .map_err(|e| Error::IoError(format!("Failed to read line: {e}")))?;
 
-    let len = buffer.trim_end_matches(&['\r', '\n']).len();
+    let len = buffer.trim_end_matches(['\r', '\n']).len();
     buffer.truncate(len);
-    
+
     Ok(())
 }
 
@@ -87,7 +87,7 @@ pub fn input() -> Result<String> {
     let mut s = String::new();
     io::stdin()
         .read_line(&mut s)
-        .map_err(|e| Error::IoError(format!("Failed to read line: {}", e)))?;
+        .map_err(|e| Error::IoError(format!("Failed to read line: {e}")))?;
 
     if s.ends_with('\n') {
         s.pop();

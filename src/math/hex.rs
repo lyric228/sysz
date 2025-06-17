@@ -1,4 +1,4 @@
-use crate::{Result, Error};
+use crate::{Error, Result};
 
 const HEX_CHARS_UPPER: [u8; 16] = *b"0123456789ABCDEF";
 const TO_UPPER_MASK: u8 = 0b11011111;

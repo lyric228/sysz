@@ -1,4 +1,4 @@
-use crate::{Result, Error};
+use crate::{Error, Result};
 
 /// Returns a string containing only binary characters ('0' and '1')
 pub fn clean(input: &str) -> String {
