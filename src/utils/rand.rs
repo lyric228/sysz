@@ -9,7 +9,6 @@ use std::ops::RangeInclusive;
 use crate::{Error, Result};
 
 /// Generates a random value within the inclusive range [min, max].
-/// Swaps min/max if min > max. Returns Error if values cannot be compared.
 pub fn random<T>(min: T, max: T) -> Result<T>
 where
     T: PartialOrd + Copy + SampleUniform,
@@ -27,7 +26,6 @@ pub fn random_bool() -> Result<bool> {
 }
 
 /// Generates a random string of `length`. Uses `charset` if provided, otherwise alphanumeric.
-/// Returns Error if `charset` is empty or distribution fails.
 pub fn random_string(length: usize, charset: Option<&str>) -> Result<String> {
     let mut rng = rng();
 
@@ -61,7 +59,6 @@ pub fn random_bytes(length: usize) -> Result<Vec<u8>> {
 }
 
 /// Returns an infinite iterator of random values within the inclusive range [min, max].
-/// Swaps min/max if min > max. Returns Error if values cannot be compared.
 pub fn random_iter<T>(min: T, max: T) -> Result<impl Iterator<Item = T>>
 where
     T: PartialOrd + Copy + SampleUniform + 'static,
@@ -84,7 +81,6 @@ where
 }
 
 /// Returns a random boolean based on `numerator`/`denominator` probability.
-/// Returns Error if denominator is zero.
 pub fn random_ratio(numerator: u32, denominator: u32) -> Result<bool> {
     let mut rng = rng();
     Ok(rng.random_ratio(numerator, denominator))
