@@ -1,5 +1,5 @@
-use std::result::Result as StdResult;
-use std::io::Error as IoError;
+use std::{io::Error as IoError, result::Result as StdResult};
+
 use rand::distr::uniform::Error as RandomError;
 
 /// Main error type for the sysz library.

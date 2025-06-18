@@ -1,10 +1,10 @@
-use std::sync::Arc;
+use std::{iter::repeat_with, ops::RangeInclusive, sync::Arc};
 
 use rand::{
-    distr::{uniform::SampleUniform, Alphanumeric, Uniform}, rng, Rng,
+    Rng,
+    distr::{Alphanumeric, Uniform, uniform::SampleUniform},
+    rng,
 };
-use std::iter::repeat_with;
-use std::ops::RangeInclusive;
 
 use crate::{Error, Result};
 
