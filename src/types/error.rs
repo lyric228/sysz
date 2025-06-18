@@ -1,6 +1,6 @@
 use std::result::Result as StdResult;
-
-use rand::distr::uniform::Error as RandUniformError;
+use std::io::Error as IoError;
+use rand::distr::uniform::Error as RandomError;
 
 /// Main error type for the sysz library.
 #[derive(Debug, thiserror::Error)]
@@ -27,7 +27,15 @@ pub enum Error {
 
     /// Error during random generation.
     #[error("Random generation error: {0}")]
-    RandomError(#[from] RandUniformError),
+    RandomErrorWrapper(#[from] RandomError),
+
+    /// Sysz I/O error.
+    #[error("I/O error: {0}")]
+    IoErrorWrapper(#[from] IoError),
+
+    /// Error during random generation.
+    #[error("Random generation error: {0}")]
+    RandomError(String),
 
     /// Sysz I/O error.
     #[error("I/O error: {0}")]
