@@ -1,10 +1,10 @@
-use std::{cmp::Ordering, sync::Arc};
+use std::sync::Arc;
 
 use rand::{
-    Rng,
-    distr::{Alphanumeric, Uniform, uniform::SampleUniform},
-    rng,
+    distr::{uniform::SampleUniform, Alphanumeric, Bernoulli, Distribution, Uniform}, rng, Rng
 };
+use std::iter::repeat_with;
+use std::ops::RangeInclusive;
 
 use crate::{Error, Result};
 
@@ -14,25 +14,16 @@ pub fn random<T>(min: T, max: T) -> Result<T>
 where
     T: PartialOrd + Copy + SampleUniform,
 {
-    let (effective_min, effective_max) = match min.partial_cmp(&max) {
-        Some(Ordering::Greater) => (max, min),
-        Some(_) => (min, max),
-        None => {
-            return Err(Error::InvalidSyntax(
-                "Invalid range comparison: cannot compare given values".to_owned(),
-            ));
-        }
-    };
-
     let mut rng = rng();
-    let distr = Uniform::new_inclusive(effective_min, effective_max)?;
+    let distr = Uniform::new_inclusive(min, max)?;
     Ok(rng.sample(distr))
 }
 
 /// Generates a random boolean (50% chance).
 pub fn random_bool() -> Result<bool> {
+    let distr = Bernoulli::new(0.5).map_err(|e| Error::RandomError(format!("Random error: {e}")))?;
     let mut rng = rng();
-    Ok(rng.random_bool(0.5))
+    Ok(distr.sample(&mut rng))
 }
 
 /// Generates a random string of `length`. Uses `charset` if provided, otherwise alphanumeric.
@@ -46,7 +37,7 @@ pub fn random_string(length: usize, charset: Option<&str>) -> Result<String> {
         }
         let char_vec: Vec<char> = chars.chars().collect();
         let distr = Uniform::new(0, char_vec.len());
-        let distr = distr.map_err(Error::RandomError)?;
+        let distr = distr.map_err(Error::RandomErrorWrapper)?;
         let s: String = (0..length)
             .map(|_| {
                 let idx = rng.sample(distr);
@@ -75,23 +66,13 @@ pub fn random_iter<T>(min: T, max: T) -> Result<impl Iterator<Item = T>>
 where
     T: PartialOrd + Copy + SampleUniform + 'static,
 {
-    let (effective_min, effective_max) = match min.partial_cmp(&max) {
-        Some(Ordering::Greater) => (max, min),
-        Some(_) => (min, max),
-        None => {
-            return Err(Error::InvalidSyntax(
-                "Invalid range comparison: cannot compare given values".to_owned(),
-            ));
-        }
-    };
-
-    let distr = Arc::new(Uniform::new_inclusive(effective_min, effective_max)?);
+    let distr = Arc::new(Uniform::new_inclusive(min, max)?);
     let mut rng = rng();
-    Ok(std::iter::repeat_with(move || rng.sample(&*distr)))
+    Ok(repeat_with(move || rng.sample(&*distr)))
 }
 
 /// Generates a random value from an inclusive `range`.
-pub fn random_range<T>(range: std::ops::RangeInclusive<T>) -> Result<T>
+pub fn random_range<T>(range: RangeInclusive<T>) -> Result<T>
 where
     T: Copy + SampleUniform,
 {
@@ -105,11 +86,6 @@ where
 /// Returns a random boolean based on `numerator`/`denominator` probability.
 /// Returns Error if denominator is zero.
 pub fn random_ratio(numerator: u32, denominator: u32) -> Result<bool> {
-    if denominator == 0 {
-        return Err(Error::InvalidSyntax(
-            "Denominator cannot be zero".to_owned(),
-        ));
-    }
     let mut rng = rng();
     Ok(rng.random_ratio(numerator, denominator))
 }
