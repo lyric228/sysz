@@ -48,30 +48,30 @@ impl Default for AsciiArtConfig {
 fn _image_to_ascii_core(img: DynamicImage, config: &AsciiArtConfig) -> Result<String, Error> {
     if config.char_set.is_empty() {
         return Err(Error::ValidationError {
-            expected: "Non-empty character set".to_string(),
-            actual:   "Empty character set".to_string(),
-            context:  Some("ASCII conversion requires at least one character".to_string()),
+            expected: "Non-empty character set".to_owned(),
+            actual:   "Empty character set".to_owned(),
+            context:  Some("ASCII conversion requires at least one character".to_owned()),
         });
     }
     if config.aspect_ratio_compensation <= 0.0 {
         return Err(Error::ValidationError {
-            expected: "Positive aspect ratio compensation".to_string(),
+            expected: "Positive aspect ratio compensation".to_owned(),
             actual:   format!("Compensation factor: {}", config.aspect_ratio_compensation),
-            context:  Some("Aspect ratio compensation must be greater than 0".to_string()),
+            context:  Some("Aspect ratio compensation must be greater than 0".to_owned()),
         });
     }
     if config.width == 0 {
         return Err(Error::ValidationError {
-            expected: "Positive width".to_string(),
-            actual:   "Width: 0".to_string(),
-            context:  Some("Target width must be greater than 0".to_string()),
+            expected: "Positive width".to_owned(),
+            actual:   "Width: 0".to_owned(),
+            context:  Some("Target width must be greater than 0".to_owned()),
         });
     }
     if img.height() == 0 {
         return Err(Error::ValidationError {
-            expected: "Non-zero image height".to_string(),
-            actual:   "Image height: 0".to_string(),
-            context:  Some("Input image height cannot be zero".to_string()),
+            expected: "Non-zero image height".to_owned(),
+            actual:   "Image height: 0".to_owned(),
+            context:  Some("Input image height cannot be zero".to_owned()),
         });
     }
 

@@ -66,7 +66,7 @@ macro_rules! log {
         $crate::log_internal!(
             $crate::log_level!($level),
             format!($($msg)*),
-            Some($ctx.to_string())
+            Some($ctx.to_owned())
         )
     };
 }
