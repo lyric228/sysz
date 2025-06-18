@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use rand::{
-    distr::{uniform::SampleUniform, Alphanumeric, Bernoulli, Distribution, Uniform}, rng, Rng
+    distr::{uniform::SampleUniform, Alphanumeric, Uniform}, rng, Rng,
 };
 use std::iter::repeat_with;
 use std::ops::RangeInclusive;
@@ -19,10 +19,9 @@ where
 }
 
 /// Generates a random boolean (50% chance).
-pub fn random_bool() -> Result<bool> {
-    let distr = Bernoulli::new(0.5).map_err(|e| Error::RandomError(format!("Random error: {e}")))?;
-    let mut rng = rng();
-    Ok(distr.sample(&mut rng))
+#[inline]
+pub fn random_bool() -> bool {
+    rand::random::<bool>()
 }
 
 /// Generates a random string of `length`. Uses `charset` if provided, otherwise alphanumeric.
