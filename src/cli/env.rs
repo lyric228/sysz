@@ -1,5 +1,6 @@
-use terminal_size::{Height, Width, terminal_size};
 use std::env;
+
+use terminal_size::{Height, Width, terminal_size};
 
 /// Get terminal width and height (x, y)
 #[inline]
