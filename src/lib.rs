@@ -7,9 +7,9 @@ pub mod crypto {
     pub mod rand;
 }
 pub mod encode {
+    pub mod base64;
     pub mod bin;
     pub mod hex;
-    pub mod base64;
 }
 pub mod net {
     pub mod ipv4;

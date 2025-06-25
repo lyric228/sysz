@@ -24,18 +24,18 @@ pub fn encode(data: &str) -> String {
 /// Encodes raw bytes to base64 formatted string
 pub fn encode_bytes(data: &[u8]) -> String {
     let len = data.len();
-    let mut result = Vec::with_capacity(4 * ((len + 2) / 3));
+    let mut result = Vec::with_capacity(4 * len.div_ceil(3));
     let mut i = 0;
-    
+
     while i + 3 <= len {
-        let chunk = &data[i..i+3];
+        let chunk = &data[i..i + 3];
         let indices = [
             (chunk[0] >> 2) as usize,
             (((chunk[0] & 0x03) << 4) | (chunk[1] >> 4)) as usize,
             (((chunk[1] & 0x0F) << 2) | (chunk[2] >> 6)) as usize,
             (chunk[2] & 0x3F) as usize,
         ];
-        
+
         result.extend(indices.iter().map(|&idx| BASE64_CHARS[idx]));
         i += 3;
     }
@@ -43,7 +43,7 @@ pub fn encode_bytes(data: &[u8]) -> String {
     match len - i {
         1 => {
             let b0 = data[i];
-            
+
             result.push(BASE64_CHARS[(b0 >> 2) as usize]);
             result.push(BASE64_CHARS[((b0 & 0x03) << 4) as usize]);
             result.push(b'=');
@@ -51,7 +51,7 @@ pub fn encode_bytes(data: &[u8]) -> String {
         }
         2 => {
             let b0 = data[i];
-            let b1 = data[i+1];
+            let b1 = data[i + 1];
 
             result.push(BASE64_CHARS[(b0 >> 2) as usize]);
             result.push(BASE64_CHARS[(((b0 & 0x03) << 4) | (b1 >> 4)) as usize]);
@@ -78,7 +78,7 @@ pub fn decode_bytes(s: &str) -> Result<Vec<u8>> {
 
     if len % 4 != 0 {
         return Err(Error::InvalidSyntax(
-            "Base64 input length must be multiple of 4".to_string()
+            "Base64 input length must be multiple of 4".to_string(),
         ));
     }
 
@@ -89,42 +89,46 @@ pub fn decode_bytes(s: &str) -> Result<Vec<u8>> {
     }
 
     let mut result = Vec::with_capacity(3 * num_blocks);
-    
+
     for i in 0..num_blocks {
         let start = i * 4;
         let end = start + 4;
         let group = &bytes[start..end];
-        
+
         let a0 = DECODE_TABLE[group[0] as usize];
         let a1 = DECODE_TABLE[group[1] as usize];
         let a2 = DECODE_TABLE[group[2] as usize];
         let a3 = DECODE_TABLE[group[3] as usize];
 
         if a0 == 0xFF {
-            return Err(Error::InvalidSyntax(
-                format!("Invalid base64 character: '{}'", group[0] as char)
-            ));
+            return Err(Error::InvalidSyntax(format!(
+                "Invalid base64 character: '{}'",
+                group[0] as char
+            )));
         }
         if a1 == 0xFF {
-            return Err(Error::InvalidSyntax(
-                format!("Invalid base64 character: '{}'", group[1] as char)
-            ));
+            return Err(Error::InvalidSyntax(format!(
+                "Invalid base64 character: '{}'",
+                group[1] as char
+            )));
         }
         if a2 == 0xFF && group[2] != b'=' {
-            return Err(Error::InvalidSyntax(
-                format!("Invalid base64 character: '{}'", group[2] as char)
-            ));
+            return Err(Error::InvalidSyntax(format!(
+                "Invalid base64 character: '{}'",
+                group[2] as char
+            )));
         }
         if a3 == 0xFF && group[3] != b'=' {
-            return Err(Error::InvalidSyntax(
-                format!("Invalid base64 character: '{}'", group[3] as char)
-            ));
+            return Err(Error::InvalidSyntax(format!(
+                "Invalid base64 character: '{}'",
+                group[3] as char
+            )));
         }
 
         if group[2] == b'=' {
             if group[3] != b'=' {
                 return Err(Error::InvalidSyntax(
-                    "Invalid padding: expected '=' at position 4".to_string()
+                    "Invalid padding: expected '=' at position 4".to_string(),
                 ));
             }
 
@@ -146,28 +150,27 @@ pub fn decode_bytes(s: &str) -> Result<Vec<u8>> {
 pub fn is_valid(base64: &str) -> bool {
     let bytes = base64.as_bytes();
     let len = bytes.len();
-    
+
     if len % 4 != 0 {
         return false;
     }
-    
+
     for &b in bytes {
         if !(b.is_ascii_alphanumeric() || b == b'+' || b == b'/' || b == b'=') {
             return false;
         }
     }
-    
+
     if len >= 4 {
         let padding_start = len - 2;
 
         for i in 0..len {
-            if bytes[i] == b'=' {
-                if i < padding_start {
+            if bytes[i] == b'='
+                && i < padding_start {
                     return false;
                 }
-            }
         }
     }
-    
+
     true
 }
