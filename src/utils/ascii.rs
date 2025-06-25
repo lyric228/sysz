@@ -1,4 +1,5 @@
 use std::path::Path;
+use std::cmp::{min, max};
 
 use image::{DynamicImage, GenericImageView, Pixel, imageops::FilterType};
 
@@ -79,7 +80,7 @@ fn _image_to_ascii_core(img: DynamicImage, config: &AsciiArtConfig) -> Result<St
     let scaled_width = config.width;
     let calculated_scaled_height =
         (config.width as f32 / aspect_ratio / config.aspect_ratio_compensation).round() as u32;
-    let scaled_height = std::cmp::max(1, std::cmp::min(calculated_scaled_height, config.height));
+    let scaled_height = max(1, min(calculated_scaled_height, config.height));
 
     let resized_img = img.resize_exact(scaled_width, scaled_height, config.resize_filter);
 
