@@ -9,7 +9,7 @@ use regex::Regex;
 static QUALIFIER_RE: OnceLock<Regex> = OnceLock::new();
 
 /// Regex getter.
-#[inline(always)]
+#[inline]
 fn qualifier_re() -> &'static Regex {
     QUALIFIER_RE.get_or_init(|| {
         Regex::new(r"([a-zA-Z_][a-zA-Z0-9_]*::)+").expect("Failed to compile qualifier regex")
@@ -17,16 +17,19 @@ fn qualifier_re() -> &'static Regex {
 }
 
 /// Removes namespace qualifiers from a non-generic type string.
+#[inline]
 pub fn simplify_nonlist_type(type_str: &str) -> String {
     type_str.rsplit("::").next().unwrap_or(type_str).to_owned()
 }
 
 /// Gets the type name of a value using `std::any::type_name`.
+#[inline]
 pub fn get_type<T: Any>(_: &T) -> &'static str {
     type_name::<T>()
 }
 
 /// Checks if a type string appears to be a generic (like `Vec<T>`, `Mutex<T>` or `[T]`).
+#[inline]
 pub fn is_list_like(type_str: &str) -> bool {
     let mut first_non_ws = None;
     let mut last_non_ws = None;
@@ -89,6 +92,7 @@ pub fn simplify_type(type_str: &str) -> String {
 }
 
 /// Processes a single type token, removing namespace qualifiers if needed and appending to result.
+#[inline]
 fn process_token(result: &mut String, token: &str, requires_processing: bool) {
     if !result.is_empty() {
         result.push_str(", ");
