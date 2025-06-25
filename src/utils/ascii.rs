@@ -2,7 +2,7 @@ use std::path::Path;
 
 use image::{DynamicImage, GenericImageView, Pixel, imageops::FilterType};
 
-use crate::types::error::Error;
+use crate::{Error, Result};
 
 /// Simple character set (~10 characters).
 pub const CHAR_SET_SIMPLE: &str = " .'`-_:;+=*%#@";
@@ -45,7 +45,7 @@ impl Default for AsciiArtConfig {
     }
 }
 
-fn _image_to_ascii_core(img: DynamicImage, config: &AsciiArtConfig) -> Result<String, Error> {
+fn _image_to_ascii_core(img: DynamicImage, config: &AsciiArtConfig) -> Result<String> {
     if config.char_set.is_empty() {
         return Err(Error::ValidationError {
             expected: "Non-empty character set".to_owned(),
@@ -107,7 +107,7 @@ fn _image_to_ascii_core(img: DynamicImage, config: &AsciiArtConfig) -> Result<St
 }
 
 /// Converts an image to ASCII art using a given configuration.
-pub fn image_to_ascii_configurable<P>(path: P, config: &AsciiArtConfig) -> Result<String, Error>
+pub fn image_to_ascii_configurable<P>(path: P, config: &AsciiArtConfig) -> Result<String>
 where
     P: AsRef<Path>,
 {
@@ -124,7 +124,7 @@ where
 
 /// Converts an image to ASCII art with specified width, height, and character set string.
 /// Uses default values for other configuration options.
-pub fn image_to_ascii<P, C>(path: P, width: u32, height: u32, char_set: C) -> Result<String, Error>
+pub fn image_to_ascii<P, C>(path: P, width: u32, height: u32, char_set: C) -> Result<String>
 where
     P: AsRef<Path>,
     C: AsRef<str>,
