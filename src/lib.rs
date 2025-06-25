@@ -9,6 +9,7 @@ pub mod crypto {
 pub mod encode {
     pub mod bin;
     pub mod hex;
+    pub mod base64;
 }
 pub mod net {
     pub mod ipv4;
