@@ -103,6 +103,7 @@ fn _image_to_ascii_core(img: DynamicImage, config: &AsciiArtConfig) -> Result<St
         }
         result.push('\n');
     }
+
     Ok(result)
 }
 
@@ -119,6 +120,7 @@ where
             e,
         ))
     })?;
+
     _image_to_ascii_core(img, config)
 }
 
@@ -136,6 +138,7 @@ where
         char_set: chars,
         ..Default::default()
     };
+
     image_to_ascii_configurable(path, &config)
 }
 
@@ -145,5 +148,6 @@ pub fn pixel_brightness<P: Pixel<Subpixel = u8>>(pixel: P) -> f32 {
     let r = channels[0] as f32 / 255.0;
     let g = channels[1] as f32 / 255.0;
     let b = channels[2] as f32 / 255.0;
+
     (0.2126 * r + 0.7152 * g + 0.0722 * b).min(1.0)
 }
