@@ -165,10 +165,9 @@ pub fn is_valid(base64: &str) -> bool {
         let padding_start = len - 2;
 
         for i in 0..len {
-            if bytes[i] == b'='
-                && i < padding_start {
-                    return false;
-                }
+            if bytes[i] == b'=' && i < padding_start {
+                return false;
+            }
         }
     }
 
