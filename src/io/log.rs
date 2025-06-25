@@ -1,7 +1,6 @@
 pub use chrono::Local;
 pub use colored::{Color, ColoredString, Colorize};
 
-/// Logging levels with associated styles.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LogLevel {
     Info,
@@ -14,19 +13,22 @@ pub enum LogLevel {
     Trace,
 }
 
+static COLORS: [Color; 8] = [
+    Color::Blue,
+    Color::Green,
+    Color::Yellow,
+    Color::Red,
+    Color::BrightRed,
+    Color::BrightRed,
+    Color::Magenta,
+    Color::Cyan,
+];
+
 impl LogLevel {
     /// Returns the color associated with the log level.
+    #[inline]
     pub fn style(&self) -> Color {
-        match self {
-            LogLevel::Info => Color::Blue,
-            LogLevel::Success => Color::Green,
-            LogLevel::Warning => Color::Yellow,
-            LogLevel::Error => Color::Red,
-            LogLevel::Bug => Color::BrightRed,
-            LogLevel::Fatal => Color::BrightRed,
-            LogLevel::Debug => Color::Magenta,
-            LogLevel::Trace => Color::Cyan,
-        }
+        unsafe { *COLORS.get_unchecked(*self as usize) }
     }
 }
 
