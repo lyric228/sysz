@@ -23,4 +23,5 @@ pub mod utils {
     pub mod ascii;
 }
 
+pub use cli::*;
 pub use types::error::*;
