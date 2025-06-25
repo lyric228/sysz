@@ -41,16 +41,19 @@ pub struct SleepTime {
 
 impl SleepTime {
     /// Creates new SleepTime from nanoseconds
+    #[inline]
     pub fn new(nanoseconds: u128) -> Self {
         Self { nanoseconds }
     }
 
     /// Converts to Duration
+    #[inline]
     pub fn to_duration(self) -> Duration {
         Duration::from_nanos(self.nanoseconds as u64)
     }
 
     /// Total seconds as f64 (lossy conversion)
+    #[inline]
     pub fn as_secs_f64(&self) -> f64 {
         self.nanoseconds as f64 / 1_000_000_000.0
     }
@@ -59,6 +62,7 @@ impl SleepTime {
 // Safe conversions (infallible)
 impl From<u64> for SleepTime {
     /// Converts milliseconds to SleepTime
+    #[inline]
     fn from(ms: u64) -> Self {
         Self {
             nanoseconds: ms as u128 * 1_000_000,
@@ -68,6 +72,7 @@ impl From<u64> for SleepTime {
 
 impl From<Duration> for SleepTime {
     /// Converts Duration to SleepTime
+    #[inline]
     fn from(d: Duration) -> Self {
         Self {
             nanoseconds: d.as_nanos(),
@@ -173,11 +178,13 @@ impl FromStr for SleepTime {
 // Additional utilities
 impl SleepTime {
     /// Create from seconds (f64)
+    #[inline]
     pub fn from_secs_f64(secs: f64) -> Result<Self, SleepError> {
         secs.try_into()
     }
 
     /// Create from milliseconds (u64)
+    #[inline]
     pub fn from_millis(ms: u64) -> Self {
         ms.into()
     }

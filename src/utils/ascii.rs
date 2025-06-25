@@ -1,5 +1,7 @@
-use std::path::Path;
-use std::cmp::{min, max};
+use std::{
+    cmp::{max, min},
+    path::Path,
+};
 
 use image::{DynamicImage, GenericImageView, Pixel, imageops::FilterType};
 
@@ -34,6 +36,7 @@ pub struct AsciiArtConfig {
 }
 
 impl Default for AsciiArtConfig {
+    #[inline]
     fn default() -> Self {
         AsciiArtConfig {
             width: 100,
@@ -127,6 +130,7 @@ where
 
 /// Converts an image to ASCII art with specified width, height, and character set string.
 /// Uses default values for other configuration options.
+#[inline]
 pub fn image_to_ascii<P, C>(path: P, width: u32, height: u32, char_set: C) -> Result<String>
 where
     P: AsRef<Path>,
@@ -144,6 +148,7 @@ where
 }
 
 /// Calculates the brightness of a pixel.
+#[inline]
 pub fn pixel_brightness<P: Pixel<Subpixel = u8>>(pixel: P) -> f32 {
     let channels = pixel.to_rgb();
     let r = channels[0] as f32 / 255.0;

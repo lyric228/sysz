@@ -21,7 +21,7 @@ where
 /// Generates a random boolean (50% chance).
 #[inline]
 pub fn random_bool() -> bool {
-    rand::random::<bool>()
+    rand::random()
 }
 
 /// Generates a random string of `length`. Uses `charset` if provided, otherwise alphanumeric.

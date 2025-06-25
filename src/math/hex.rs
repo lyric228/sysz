@@ -21,6 +21,7 @@ pub fn to_uppercase(hex: &str) -> String {
             out[i] = b;
         }
     }
+
     result
 }
 
@@ -41,17 +42,20 @@ pub fn to_lowercase(hex: &str) -> String {
             out[i] = b;
         }
     }
+
     result
 }
 
 /// Returns a string containing only hex characters from the input
 pub fn clean(input: &str) -> String {
     let mut cleaned = String::with_capacity(input.len());
+
     for c in input.chars() {
         if c.is_ascii_hexdigit() {
             cleaned.push(c);
         }
     }
+
     cleaned
 }
 
@@ -69,6 +73,7 @@ pub fn decode(hex: &str) -> Result<String> {
     }
 
     let len = cleaned.len();
+
     if !is_valid {
         return Err(Error::InvalidSyntax(
             "Non-hex character detected".to_owned(),
@@ -92,6 +97,7 @@ pub fn decode(hex: &str) -> Result<String> {
             .to_digit(16)
             .ok_or_else(|| Error::InvalidSyntax(format!("Invalid hex character: {c2}")))?
             as u8;
+
         bytes.push((hi << 4) | lo);
     }
 
@@ -107,9 +113,11 @@ pub fn encode(text: &str) -> String {
         if i > 0 {
             result.push(' ');
         }
+
         result.push(HEX_CHARS_UPPER[(byte >> 4) as usize] as char);
         result.push(HEX_CHARS_UPPER[(byte & 0x0F) as usize] as char);
     }
+
     result
 }
 
@@ -159,6 +167,7 @@ pub fn format(hex: &str) -> Result<String> {
         if i > 0 {
             result.push(' ');
         }
+
         result.push(chars.next().unwrap());
         result.push(chars.next().unwrap());
     }
