@@ -17,6 +17,7 @@ const fn build_decode_table() -> [u8; 256] {
 }
 
 /// Encodes UTF-8 string to base64 formatted string
+#[inline]
 pub fn encode(data: &str) -> String {
     encode_bytes(data.as_bytes())
 }
@@ -65,6 +66,7 @@ pub fn encode_bytes(data: &[u8]) -> String {
 }
 
 /// Decodes base64 string to UTF-8 string with validation
+#[inline]
 pub fn decode(s: &str) -> Result<String> {
     let bytes = decode_bytes(s)?;
 
@@ -147,6 +149,7 @@ pub fn decode_bytes(s: &str) -> Result<Vec<u8>> {
 }
 
 /// Checks if string contains only valid base64 characters
+#[inline]
 pub fn is_valid(base64: &str) -> bool {
     let bytes = base64.as_bytes();
     let len = bytes.len();
