@@ -15,6 +15,10 @@ pub mod net {
     pub mod ipv4;
     pub mod ipv6;
 }
+pub mod time {
+    pub mod sleep;
+    pub use sleep::*;
+}
 pub mod types {
     pub mod checker;
     pub mod error;
