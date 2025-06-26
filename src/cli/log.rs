@@ -36,7 +36,7 @@ impl LogLevel {
 #[macro_export]
 macro_rules! log_level {
     ($level:ident) => {{
-        use $crate::io::log::LogLevel::*;
+        use $crate::log::LogLevel::*;
         match stringify!($level).to_uppercase().as_str() {
             "INFO" => Info,
             "SUCCESS" => Success,
