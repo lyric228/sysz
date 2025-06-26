@@ -23,6 +23,7 @@ pub mod types {
     pub mod checker;
     pub mod error;
 }
+#[cfg(feature = "utils")]
 pub mod utils {
     #[cfg(feature = "ascii")]
     pub mod ascii;

@@ -22,4 +22,6 @@ tempfile = "3.20.0"
 
 [features]
 default = []
-ascii = []
+
+utils = []
+ascii = ["utils"]
