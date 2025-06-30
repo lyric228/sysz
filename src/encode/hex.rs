@@ -79,7 +79,7 @@ pub fn decode(hex: &str) -> Result<String> {
             "Non-hex character detected".to_owned(),
         ));
     }
-    if len % 2 != 0 {
+    if !len.is_multiple_of(2) {
         return Err(Error::InvalidSyntax(
             "Hex string must have even length".to_owned(),
         ));
@@ -154,7 +154,7 @@ pub fn format(hex: &str) -> Result<String> {
     if len == 0 {
         return Err(Error::InvalidSyntax("Empty hex string".to_owned()));
     }
-    if len % 2 != 0 {
+    if !len.is_multiple_of(2) {
         return Err(Error::InvalidSyntax(
             "Hexadecimal string length must be a multiple of 2".to_owned(),
         ));

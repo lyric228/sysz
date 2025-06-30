@@ -30,7 +30,7 @@ pub fn decode(bin: &str) -> Result<String> {
             "Non-binary character detected".to_owned(),
         ));
     }
-    if len % 8 != 0 {
+    if !len.is_multiple_of(8) {
         return Err(Error::InvalidSyntax(
             "Binary string must have length multiple of 8".to_owned(),
         ));
@@ -108,7 +108,7 @@ pub fn format(bin: &str) -> Result<String> {
     if len == 0 {
         return Err(Error::InvalidSyntax("Empty binary string".to_owned()));
     }
-    if len % 8 != 0 {
+    if !len.is_multiple_of(8) {
         return Err(Error::InvalidSyntax(
             "Binary string length must be multiple of 8".to_owned(),
         ));

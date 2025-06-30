@@ -78,7 +78,7 @@ pub fn decode_bytes(s: &str) -> Result<Vec<u8>> {
     let bytes = s.as_bytes();
     let len = bytes.len();
 
-    if len % 4 != 0 {
+    if !len.is_multiple_of(4) {
         return Err(Error::InvalidSyntax(
             "Base64 input length must be multiple of 4".to_string(),
         ));
@@ -154,7 +154,7 @@ pub fn is_valid(base64: &str) -> bool {
     let bytes = base64.as_bytes();
     let len = bytes.len();
 
-    if len % 4 != 0 {
+    if !len.is_multiple_of(4) {
         return false;
     }
 
