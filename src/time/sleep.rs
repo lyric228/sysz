@@ -20,7 +20,7 @@ where
 #[derive(Debug, Error, PartialEq)]
 pub enum SleepError {
     /// Invalid time string format
-    #[error("Invalid time format: '{0}'")]
+    #[error("Invalid time format: {0}")]
     InvalidFormat(String),
     /// Time value out of range
     #[error("Time value out of range: {0}")]
@@ -188,4 +188,20 @@ impl SleepTime {
     pub fn from_millis(ms: u64) -> Self {
         ms.into()
     }
+}
+
+/// Suspends the thread for given duration or returns immediately if zero.
+///
+/// Returns immediately on invalid inputs.
+#[macro_export]
+macro_rules! sleep {
+    () => {};
+    ($time:expr) => {{
+        use $crate::time::sleep::{SleepError, SleepTime};
+        match $time.try_into() {
+            Ok(t) if t.nanoseconds == 0 => {},
+            Ok(t) => std::thread::sleep(t.to_duration()),
+            Err(e) => {},
+        }
+    }};
 }
